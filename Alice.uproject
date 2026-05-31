@@ -1,0 +1,37 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "",
+	"Category": "Game",
+	"Description": "Alice: Coracao Partido - dark-gothic Wonderland soulslike (UE5.7).",
+	"Modules": [
+		{
+			"Name": "Alice",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"EnhancedInput",
+				"AIModule",
+				"UMG"
+			]
+		}
+	],
+	"Plugins": [
+		{ "Name": "EnhancedInput", "Enabled": true },
+		{ "Name": "ModelingToolsEditorMode", "Enabled": true },
+		{ "Name": "PythonScriptPlugin", "Enabled": true },
+		{ "Name": "EditorScriptingUtilities", "Enabled": true },
+		{ "Name": "MotionWarping", "Enabled": true },
+		{ "Name": "AnimationLocomotionLibrary", "Enabled": true },
+		{ "Name": "GameplayCameras", "Enabled": true },
+		{ "Name": "PythonFoundationPackages", "Enabled": true },
+		{ "Name": "GeometryScripting", "Enabled": true },
+		{ "Name": "AIAssistant", "Enabled": true },
+		{ "Name": "PCG", "Enabled": true },
+		{ "Name": "PCGNiagaraInterop", "Enabled": true },
+		{ "Name": "PCGNaniteAssembliesInterop", "Enabled": true },
+		{ "Name": "PCGInstancedActorsInterop", "Enabled": true },
+		{ "Name": "PCGGeometryScriptInterop", "Enabled": true },
+		{ "Name": "PCGPythonInterop", "Enabled": true }
+	]
+}

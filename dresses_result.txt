@@ -1,0 +1,7 @@
+STARTED
+DONE SK_Alice_Coelho verts=202350
+DONE SK_Alice_Cheshire verts=212897
+DONE SK_Alice_Chapeleiro verts=205148
+DONE SK_Alice_Lagarta verts=208431
+DONE SK_Alice_Rainha verts=202649
+ALL_DONE

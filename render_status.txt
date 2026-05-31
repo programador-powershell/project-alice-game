@@ -1,0 +1,4 @@
+SK=True MAT=True
+alice spawned mid=True nummat=1
+rendered solid
+rendered dissolve

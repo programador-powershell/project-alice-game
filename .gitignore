@@ -1,0 +1,42 @@
+# ============================================================
+# Unreal Engine 5.7 — Project Alice (repo público)
+# Versiona CÓDIGO + estrutura. Assets binários pesados (.uasset/.fbx/.umap)
+# NÃO entram aqui — distribuídos via Supabase Storage / releases.
+# ============================================================
+
+# Gerados pela engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+*.VC.db
+*.VC.opendb
+*.sln
+*.suo
+*.opensdf
+*.sdf
+
+# Assets binários pesados (GitHub rejeita >100MB; vão via Storage)
+Content/**/*.uasset
+Content/**/*.umap
+Content/**/*.fbx
+Content/**/*.glb
+Content/**/*.png
+Content/**/*.tga
+Content/**/*.wav
+Content/**/*.mp4
+
+# Mantém a árvore de pastas do Content visível (estrutura, sem binários)
+!Content/**/.gitkeep
+
+# Ferramentas / logs locais
+Tools/**/*.blend
+Tools/**/*.blend1
+*.log
+_PREVIEWS/
+wpn_info.txt
+
+# Backups e temporários
+*.bak
+*.tmp

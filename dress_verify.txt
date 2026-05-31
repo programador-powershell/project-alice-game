@@ -1,0 +1,9 @@
+M_AliceDress loaded=True
+  base_color       ERR Material: Failed to find property 'base_color' for attribute 'base_color' on 'Material'
+  emissive_color   ERR Material: Failed to find property 'emissive_color' for attribute 'emissive_color' on 'Material'
+  opacity_mask     ERR Material: Failed to find property 'opacity_mask' for attribute 'opacity_mask' on 'Material'
+  roughness        ERR Material: Property 'Roughness' for attribute 'roughness' on 'Material' is protected and cannot be read
+  expr_count ERR 'Material' object has no attribute 'get_expressions'
+  blend=<BlendMode.BLEND_MASKED: 1> two_sided=True clip=0.00
+  params ERR 'Material' object has no attribute 'get_expressions'
+SK_Alice slots=1 mats=['DefaultMaterial']
