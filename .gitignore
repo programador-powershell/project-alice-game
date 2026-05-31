@@ -30,6 +30,13 @@ Content/**/*.mp4
 # Mantém a árvore de pastas do Content visível (estrutura, sem binários)
 !Content/**/.gitkeep
 
+# EXCECAO: assets 3D leves servidos pelo SITE via Galeria.
+# (decimados pra <10MB cada, formato GLB com JPEG embedded)
+# /api/gallery/assets no project-alice-challenge le essa pasta via GitHub API.
+!Content/Assets/3D/**/*.glb
+!Content/Assets/3D/**/*.gltf
+!Content/Assets/3D/**/*.fbx
+
 # Ferramentas / logs locais
 Tools/**/*.blend
 Tools/**/*.blend1
