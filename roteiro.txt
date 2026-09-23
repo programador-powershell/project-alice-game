@@ -2,6 +2,7 @@
 
 > Engine alvo: **Unreal Engine 5.7** + **Blender** para modelagem CAD/maquete 3D.  
 > Gênero: **soulslike de ação**, dark fantasy vitoriano, Wonderland corrompido.  
+> Contrato espacial: **UU para comprimentos e coordenadas; UU² para áreas; 1 UU = 1 cm**. Ver seção 4.1.  
 
 ---
 
@@ -91,18 +92,21 @@ A Margem do Rio deve ser construída como mapa separado, carregado antes do mund
 
 O mundo geral contém 10 áreas conectadas, construídas com **World Partition** e **Data Layers**. O desenho de progressão segue topologia soulslike: áreas encadeadas, atalhos, retornos, caminhos laterais, verticalidade, fog gates, elevadores e corredores de transição.
 
-Métrica final do mundo:
+Métricas canônicas do mundo, na escala de implementação:
 
 ```text
-Mundo total: 4800 m x 4800 m
-Área total: 23,04 km²
-Área jogável direta: ~8,9 km²
-Conexões, estradas e rotas: ~3,5 km²
-Montanhas, bordas, relevo e preenchimento: ~10,6 km²
-Rota principal sinuosa: ~14–16 km
+Mundo total (X × Y): 480000 × 480000 UU
+Limites em X e Y: de -240000 a +240000 UU
+Área total em planta: 230400000000 UU²
+Área-alvo jogável direta (10 áreas): ~89000000000 UU²
+Conexões, estradas e rotas: ~35000000000 UU²
+Montanhas, bordas, relevo e preenchimento: ~106400000000 UU²
+Rota principal sinuosa: ~1400000–1600000 UU
 Exploração lateral: 30–60%
-Verticalidade: alta
+Verticalidade: alta; cotas Z dependem do relevo aprovado
 ```
+
+As áreas são orçamentos aproximados em planta, não medições finais de malha nem soma dos pisos de áreas verticais. O preenchimento usa o saldo nominal `230400000000 - 89000000000 - 35000000000 = 106400000000 UU²`, eliminando a diferença de arredondamento do orçamento anterior. A Margem do Rio é separada e não entra nessa soma. O comprimento da rota sinuosa não é uma dimensão do terreno.
 
 O mundo não deve parecer um tabuleiro plano. Deve parecer uma maquete gigante contínua, com cada mapa individual incorporado organicamente ao terreno, sem sobreposição, sem ilhas empilhadas e sem bordas quadradas aparentes.
 
@@ -110,24 +114,52 @@ O mundo não deve parecer um tabuleiro plano. Deve parecer uma maquete gigante c
 
 # 4. TABELA MESTRE DE ÁREAS
 
-| # | Área | Tamanho aproximado | Posição no mundo | Tipo | Função narrativa |
-|---|------|--------------------|------------------|------|------------------|
-| — | Margem do Rio | ~0,25 km² | nível separado | prólogo | Alice e Lídia antes da queda |
-| 1 | Interior de Chá | 0,15 km² / ~390×385 m | (-96, -1920) sul | interior multi-sala | primeiro checkpoint, faca, falsa segurança |
-| 2 | Vórtice | 0,20 km² / Ø~500 m | (0, -1248) | funil vertical | queda, transição e ruptura temporal |
-| 3 | Toca Mecânica | 0,55 km² / ~740×740 m | (-1200, -960) | warren mecânico | boss Coelho Branco, tempo |
-| 4 | Arena Temporal | 0,35 km² / Ø~670 m | (1056, -528) | arena boss | luta/eco temporal, desbloqueio de poder |
-| 5 | Floresta Retorcida | 2,0 km² / ~1400×1400 m | (-336, -96) | exploração grande | Cheshire, ilusão, corrupção |
-| 6 | Salão do Chá | 0,45 km² / ~670×670 m | (816, 192) | hall + boss | Chapeleiro, caos, chá eterno |
-| 7 | Névoa de Cogumelos | 1,5 km² / ~1220×1220 m | (-1200, 672) | campo nebuloso | Lagarta Azul, identidade, fumaça |
-| 8 | Pátio Real | 1,1 km² / ~1050×1050 m | (0, 1392) norte | castelo/montanha | Rainha de Copas, sentença |
-| 9 | Ruínas/Caminhos | 1,7 km² / ~1300×1300 m | (1680, 384) | multi-rota/clímax | gauntlet, guilhotina, colapso |
-| 10 | Campo Etéreo | 0,9 km² / ~950×950 m | (1440, 1776) | finale alto | boss Lídia, reencontro |
+## 4.1 Contrato de unidades e coordenadas
 
-Regras obrigatórias de posicionamento:
+**Fonte canônica para implementação: comprimentos, dimensões, raios, alturas, offsets e coordenadas em UU; áreas em UU².** Uma área não pode ser convertida em uma distância apenas trocando o sufixo da unidade.
+
+```text
+1 UU = 1 cm
+1 mm = 0.1 UU
+1 m = 100 UU
+1 km = 100000 UU
+1 m² = 10000 UU²
+1 km² = 10000000000 UU²
+```
+
+Os fatores acima servem para migração e intercâmbio; as tabelas de construção já estão convertidas. Não aplicar novamente `×100` aos valores em UU. Campos técnicos devem identificar a grandeza, por exemplo `center_xy_uu`, `size_xy_uu`, `radius_uu` e `area_uu2`. Usar inteiros sem separador de milhar e ponto para casas decimais. Áreas em UU² exigem `int64` quando inteiras ou `double` quando calculadas; não usar `int32`, pois o orçamento do mundo ultrapassa esse limite. Escala de Transform é adimensional, não é uma distância em UU.
+
+Referencial obrigatório do desenho do mundo:
+
+- A origem global `(0, 0, 0)` fica no centro XY do mundo; `Z=0` é o datum de referência, não a altura obrigatória do chão.
+- Convenção cartográfica deste projeto: `+X = leste`, `-X = oeste`, `+Y = norte`, `-Y = sul`, `+Z = cima`. Norte não é altura. Essa orientação de bússola é uma convenção do mapa, não uma orientação geográfica imposta pelo Unreal.
+- Os pares da tabela são **centros de referência `(X, Y)` em world space**, nunca cantos, tamanhos, coordenadas de tela ou offsets locais. Os valores anteriores sem unidade foram interpretados como metros, coerentemente com o mundo de 4800 m de lado, e multiplicados por 100 uma única vez, preservando o desenho físico.
+- As dimensões são tamanhos completos em X e Y; `half_extent_uu = size_uu / 2`. `Ø` significa diâmetro; `radius_uu = diameter_uu / 2`.
+- A tabela não define cotas Z, rotações, contornos finais nem pontos exatos de spawn. Resolver esses dados no blockout/relevo antes de gerar geometria final. Não preencher Z ausente com zero silenciosamente, não empilhar áreas para esconder conflitos e não inventar uma altura por causa da palavra “norte”.
+- A Margem do Rio tem mapa e origem próprios. A transição para o mundo geral deve usar um destino explícito, sem somar a origem do prólogo às coordenadas globais abaixo.
+
+## 4.2 Dimensões e centros de referência
+
+As áreas-alvo e dimensões herdadas são aproximadas e independentes: `largura × comprimento` ou `π × raio²` pode diferir do orçamento arredondado. Não derivar posições, raios ou um novo tamanho físico a partir da coluna de área. Os envelopes dimensionais são referências de planejamento, não lotes retangulares/circulares já aprovados para preenchimento integral.
+
+| # | Área | Área-alvo aprox. (UU²) | Dimensões XY aprox. (UU) | Centro (X, Y) em UU | Tipo | Função narrativa |
+|---|------|------------------------|--------------------------|---------------------|------|------------------|
+| — | Margem do Rio | 2500000000 | contorno a definir no mapa separado | origem própria; fora do mundo geral | prólogo | Alice e Lídia antes da queda |
+| 1 | Interior de Chá | 1500000000 | 39000 × 38500 | (-9600, -192000) | interior multi-sala | primeiro checkpoint, faca, falsa segurança |
+| 2 | Vórtice | 2000000000 | Ø 50000 | (0, -124800) | funil vertical | queda, transição e ruptura temporal |
+| 3 | Toca Mecânica | 5500000000 | 74000 × 74000 | (-120000, -96000) | warren mecânico | boss Coelho Branco, tempo |
+| 4 | Arena Temporal | 3500000000 | Ø 67000 | (105600, -52800) | arena boss | luta/eco temporal, desbloqueio de poder |
+| 5 | Floresta Retorcida | 20000000000 | 140000 × 140000 | (-33600, -9600) | exploração grande | Cheshire, ilusão, corrupção |
+| 6 | Salão do Chá | 4500000000 | 67000 × 67000 | (81600, 19200) | hall + boss | Chapeleiro, caos, chá eterno |
+| 7 | Névoa de Cogumelos | 15000000000 | 122000 × 122000 | (-120000, 67200) | campo nebuloso | Lagarta Azul, identidade, fumaça |
+| 8 | Pátio Real | 11000000000 | 105000 × 105000 | (0, 139200) | castelo/montanha | Rainha de Copas, sentença |
+| 9 | Ruínas/Caminhos | 17000000000 | 130000 × 130000 | (168000, 38400) | multi-rota/clímax | gauntlet, guilhotina, colapso |
+| 10 | Campo Etéreo | 9000000000 | 95000 × 95000 | (144000, 177600) | finale alto | boss Lídia, reencontro |
+
+## 4.3 Regras obrigatórias de posicionamento
 
 - Interior de Chá começa no sul.
-- Vórtice fica acima/norte do Interior de Chá.
+- Vórtice fica ao norte do Interior de Chá em XY; sua profundidade é uma medida separada em Z.
 - Toca Mecânica fica a sudoeste/oeste, com alta verticalidade e máquinas.
 - Arena Temporal fica a leste/sudeste do centro.
 - Floresta Retorcida ocupa a maior área central/esquerda.
@@ -136,6 +168,14 @@ Regras obrigatórias de posicionamento:
 - Pátio Real fica no norte, elevado em montanha/castelo.
 - Campo Etéreo fica atrás/depois do Pátio Real, mais alto e finalístico.
 - Ruínas/Caminhos ficam à direita/leste, conectando clímax e Campo Etéreo.
+
+## 4.4 Validação espacial antes de gerar o mundo
+
+Todos os centros e envelopes dimensionais da tabela cabem nos limites XY de `-240000` a `+240000 UU`. Isso não comprova ausência de sobreposição: os envelopes conservadores herdados se interceptam entre **Toca Mecânica / Floresta Retorcida**, **Floresta Retorcida / Névoa de Cogumelos**, **Salão do Chá / Ruínas/Caminhos** e **Arena Temporal / Ruínas/Caminhos**. Essas interseções já existiam no desenho em metros; trocar unidades não as elimina.
+
+Antes da geração final, aprovar contornos reais sem sobreposição indevida, cotas Z, entradas, saídas e corredores de transição. A validação deve distinguir um envelope de planejamento, a ocupação real e uma conexão intencional. Não gerar cada envelope como bloco sólido completo nem mover seus centros automaticamente para mascarar a pendência. Uma revisão de layout deve ser explícita e atualizar esta fonte canônica.
+
+**Critérios de aceite:** conversão dimensional correta, limites do mundo respeitados, terreno contínuo, contornos e conexões validados, ausência de colisões indevidas, cotas e spawns resolvidos, além de teste de escala/orientação da importação descrito na seção 17.2. A tabela é uma especificação de planejamento, não uma certificação de um mapa já executado.
 
 ---
 
@@ -365,7 +405,7 @@ Falas-chave:
 Função:
 
 - boss completo da Rainha de Copas;
-- arena 80×80 m com trono e exército;
+- arena 8000 × 8000 UU com trono e exército;
 - desbloqueio do vestido da Rainha.
 
 ## Cena 15 — Clímax / Gauntlet nas Ruínas
@@ -1270,10 +1310,10 @@ As armas de Lídia pertencem a ela, não a Alice. Elas são usadas no boss final
 **Dona:** Lídia, Rainha do Coração Partido  
 **Frase:** “Corte, tempero, sentença.”  
 **Tipo:** faca de cozinha ritualística.  
-**Comprimento total:** 38,8 cm.  
-**Comprimento da lâmina:** 25,2 cm.  
-**Largura máxima da lâmina:** 3,1 cm.  
-**Espessura da lâmina:** 4,4 mm na base.  
+**Comprimento total:** 38.8 UU.  
+**Comprimento da lâmina:** 25.2 UU.  
+**Largura máxima da lâmina:** 3.1 UU.  
+**Espessura da lâmina:** 0.44 UU na base.  
 **Peso estimado:** 468 g.  
 **Materiais:** aço damasco negro, metal negro, esmalte vermelho escuro e pedras de sangue.
 
@@ -1301,10 +1341,10 @@ A insígnia do coração partido é o núcleo de força da arma. Ela carrega o i
 **Dona:** Lídia, Rainha do Coração Partido  
 **Frase:** “Coroa de lágrimas e apostas.”  
 **Tipo:** odachi / nodachi colossal.  
-**Comprimento total:** ~4,1 m.  
-**Comprimento da lâmina:** ~3,6 m.  
-**Largura da lâmina:** 5,8 cm na base.  
-**Espessura da lâmina:** 8 mm na base.  
+**Comprimento total:** ~410 UU.  
+**Comprimento da lâmina:** ~360 UU.  
+**Largura da lâmina:** 5.8 UU na base.  
+**Espessura da lâmina:** 0.8 UU na base.  
 **Materiais:** aço damasco negro, metal negro, esmalte vermelho escuro e pedras de sangue.
 
 ### Descrição visual
@@ -1488,7 +1528,7 @@ Visual:
 - Túnel vertical espiral.
 - Relógios, portas, cartas e xícaras flutuantes.
 - Roxo/magenta com flashes azuis.
-- Profundidade acima de 100 m visual.
+- Profundidade visual acima de 10000 UU; não substitui a definição das cotas Z e do volume de queda.
 
 ## 13.4 Interior de Chá
 
@@ -1540,7 +1580,7 @@ Visual:
 ## 13.10 Pátio Real
 
 - Castelo gótico vermelho no topo da montanha.
-- Praça 80×80 m.
+- Praça 8000 × 8000 UU.
 - Trono elevado.
 - Soldados-carta em fileiras.
 - Braseiros, bandeiras e céu vermelho.
@@ -1817,16 +1857,21 @@ Usar Blender para:
 - preparação de FBX/glTF;
 - validação de escala.
 
-Escala:
+Escala e intercâmbio:
 
-```text
-1 Unreal Unit = 1 cm
-1 m = 100 uu
-```
+O contrato canônico é o da seção 4.1: **1 UU = 1 cm**, comprimentos em UU e áreas em UU². Blender, FBX/glTF e ferramentas auxiliares não podem redefinir a escala física do projeto.
+
+- Se a cena de autoria usar metros, converter os dados canônicos de comprimento com `valor_m = valor_uu / 100` somente na entrada dessa etapa. No retorno ao Unreal, o resultado físico deve voltar às dimensões em UU. Áreas, quando necessárias nessa etapa, usam `area_m2 = area_uu2 / 10000`, nunca o fator linear.
+- Fixar e registrar o preset de unidades, eixos e pivôs para cada caminho de exportação/importação. A conversão pode ser tratada pelo exportador/importador ou por código explícito, mas nunca duplicada. Não assumir que FBX e glTF usam as mesmas opções.
+- Separar geometria local do asset, pivô e Transform global da área. Aplicar o Transform de implantação uma única vez; um asset já posicionado em world space não deve receber novamente o centro da tabela. Rotações e escalas do pai exigem a transformação completa, não apenas soma de offsets.
+- Validar um cubo de referência de **100 × 100 × 100 UU** no Unreal (equivalente a 1 m por lado), com escala final de Transform `(1, 1, 1)`. Testar também marcadores assimétricos que devam chegar a `(100, 0, 0)`, `(0, 200, 0)` e `(0, 0, 300) UU` no referencial de teste, para detectar troca/espelhamento de eixos e deslocamento de origem.
+- Validar o primeiro asset e uma âncora de área antes de importar o conjunto. Valores já em UU não recebem outro `×100`; unidades de exibição do editor não são autorização para reescalar a geometria.
+
+Referências técnicas: [Unidades no Unreal (Epic Games)](https://dev.epicgames.com/documentation/en-us/unreal-engine/units-of-measurement-in-unreal-engine) e [Sistemas de coordenadas e espaços (Epic Games)](https://dev.epicgames.com/documentation/en-us/unreal-engine/coordinate-system-and-spaces-in-unreal-engine).
 
 ## 17.3 Construção do mapa
 
-O mapa inteiro deve ser construído por camadas globais, não por blocos soltos empilhados.
+O mapa inteiro deve ser construído por camadas globais, não por blocos soltos empilhados. Todas as ferramentas de geração devem consumir o contrato da seção 4, identificar a unidade de entrada e interromper a geração final se faltarem cotas/contornos ou se houver conflito espacial não resolvido. World Partition e Data Layers não corrigem unidades, pivôs ou posições incorretas.
 
 Ordem correta:
 
@@ -1884,8 +1929,8 @@ Para vestidos complexos, separar sempre:
 
 ## Fase 02 — Blockout global
 
-- Criar mundo 4800×4800 m.
-- Demarcar as 10 áreas.
+- Criar mundo 480000 × 480000 UU, centrado na origem XY e conforme a seção 4.
+- Demarcar as 10 áreas pelos centros em UU e validar os envelopes/contornos da seção 4.4.
 - Criar rotas principais e secundárias.
 - Garantir Pátio Real em montanha.
 - Garantir Campo Etéreo atrás/acima do Pátio Real.
@@ -1970,7 +2015,11 @@ Ordem:
 15. O mapa deve ser contínuo, sem blocos empilhados.
 16. O Salão do Chá não pode ser uma caixa simples: precisa de curvas, mesa longa, ruínas, colapso e profundidade.
 17. Personagens e roupas devem ser preparados para rig/cloth, não apenas imagem estática.
-18. Toda modelagem deve respeitar escala UE: 1 uu = 1 cm.
+18. Toda modelagem deve respeitar escala UE: 1 UU = 1 cm, conforme a seção 4.1.
+19. Distâncias, alturas, dimensões e coordenadas são expressas em UU; áreas são expressas em UU². Nunca usar uma área como componente de posição ou dimensão linear.
+20. Preservar a origem global, a ordem (X, Y), a convenção de eixos e os limites do mundo. Centros globais não são offsets locais.
+21. Converter unidades uma única vez por fronteira de intercâmbio e validar escala, pivô e orientação antes da importação em lote.
+22. Cotas Z, contornos, spawns e conexões precisam de definição e validação explícitas. Conversão de unidades não aprova automaticamente o layout nem elimina interseções de envelopes.
 
 ---
 
