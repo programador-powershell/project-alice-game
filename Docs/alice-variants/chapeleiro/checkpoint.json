@@ -1,0 +1,74 @@
+{
+  "project": "Project Alice — Challenge",
+  "originalAuthor": "programador-powershell",
+  "variant": "alice_chapeleiro",
+  "status": "refinement_in_progress",
+  "studioModelId": "32254621-cdf9-43bd-8297-54446796d892",
+  "sourcePhotoSha256": "69e81154d4fe0903f76883a049ea9c3e2e9f16f57e488cf2075a0d7158e8feab",
+  "originalDownloadedGlbSha256": "774363e83d8606c42c0cdf273e4b79a870825f4802a813ee6667840cbdf70578",
+  "galleryModel": {
+    "file": "Content/Assets/3D/personagens/alice-vestido-chapeleiro.glb",
+    "sha256": "19bd4738b4508fe7ef175f8b4b21587843f18bce8f7a8831d0f0d27bfc827008",
+    "bytes": 69696284,
+    "triangles": 1890825,
+    "joints": 0,
+    "animations": [],
+    "dimensions": [
+      0.4434661865234375,
+      0.97991943359375,
+      0.3111877143383026
+    ]
+  },
+  "parametersObserved": {
+    "model": "H3.1",
+    "ultraMesh": true,
+    "textureResolution": "4K",
+    "pbr": true,
+    "removeLighting": true,
+    "polycountLimit": 2000000,
+    "generateParts": false,
+    "texture8K": false,
+    "aiCompletion": false
+  },
+  "creditsConsumed": 55,
+  "additionalCreditsConsumed": 0,
+  "premiumFeaturesUsed": false,
+  "actualFourViewReview": [
+    "Conjunto novo preserva cartola, cartas, relogios, xicaras, avental e laco em volume real; ainda exige refinamento pela ficha de cada peca.",
+    "O material de pele foi corrigido localmente em rosto, bracos e dedos. Cabelo ainda tem mechas compactas; bordados e rendas precisam de separacao e polimento.",
+    "Superficies internas de todas as camadas, rig completo, caminhada, corrida, salto, ataque e colisoes de tecido permanecem pendentes."
+  ],
+  "comparisonArtifacts": [
+    {
+      "file": "Docs/alice-variants/chapeleiro/source_photo.png",
+      "sha256": "69e81154d4fe0903f76883a049ea9c3e2e9f16f57e488cf2075a0d7158e8feab"
+    },
+    {
+      "file": "Docs/alice-variants/chapeleiro/photo_vs_geometry.jpg",
+      "sha256": "d083be441bc8a299712323e4f4f16a1a4958b378ad7527e50eb6dd7672fac354"
+    },
+    {
+      "file": "Docs/alice-variants/chapeleiro/front.png",
+      "sha256": "8e01a6f49420859162f3021bf5c356773af69082eabccdd6cdbece9cf8591c37"
+    },
+    {
+      "file": "Docs/alice-variants/chapeleiro/side.png",
+      "sha256": "e62f152145b7125ba0471478fc98f140a494855a715169d75fcb4610dd4c061f"
+    },
+    {
+      "file": "Docs/alice-variants/chapeleiro/back.png",
+      "sha256": "6de53ec915d9ec038b279d443ddebefa692a73b58b4dec9c98569ab3a5c57063"
+    },
+    {
+      "file": "Docs/alice-variants/chapeleiro/threequarter.png",
+      "sha256": "29128e7d4c4cfd0fcba0e913f4757e205f36060cc53db26f3488dcb7901a8d2f"
+    }
+  ],
+  "allLayersFinished": false,
+  "fidelityVerified": false,
+  "motionVerified": false,
+  "clothCollisionVerified": false,
+  "nextVariantMayStart": false,
+  "approvedAliceBasePreserved": true,
+  "updatePolicy": "Refine locally against each original layer photo. Publish further commits to this same gallery slug. Finish all Chapeleiro layers and rig before the next Tripo generation."
+}
